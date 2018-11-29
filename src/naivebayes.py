@@ -56,7 +56,7 @@ allWords = [i[0] for i in sortedWords]
 
 tempWords = list(allWords)
 
-theWords = tempWords[:10000]
+theWords = tempWords[:1000]
 
 #theWords = theWordSet[15000:16000]
 ########################################################################
@@ -79,10 +79,15 @@ splitNum = int(round(len(trainSet)*0.8))
 
 theClass = nltk.NaiveBayesClassifier.train(trainSet)
 
-print(nltk.classify.accuracy(theClass, trainSet[splitNum:]))
+theAccuracy = nltk.classify.accuracy(theClass, trainSet[splitNum:])
 theClass.show_most_informative_features(10)
 
 printCount = 0
+
+with open('accuracy.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')    
+    writer.writerow([theAccuracy])
+
 
 with open('names.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')    
