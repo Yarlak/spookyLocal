@@ -56,7 +56,7 @@ allWords = [i[0] for i in sortedWords]
 
 tempWords = list(allWords)
 
-theWords = tempWords[:1000]
+theWords = tempWords[:15000]
 
 #theWords = theWordSet[15000:16000]
 ########################################################################
