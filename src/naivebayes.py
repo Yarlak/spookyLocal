@@ -56,7 +56,7 @@ allWords = [i[0] for i in sortedWords]
 
 tempWords = list(allWords)
 
-theWords = tempWords[:15000]
+theWords = tempWords[:1000]
 
 #theWords = theWordSet[15000:16000]
 ########################################################################
@@ -84,6 +84,11 @@ theClass.show_most_informative_features(10)
 
 printCount = 0
 
+thePredictions = []
+
+for item in testSet:
+	thePredictions.append(nltk.NaiveBayesClassifier.prob_classify(theClass, item))
+
 with open('accuracy.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')    
     writer.writerow([theAccuracy])
@@ -94,8 +99,8 @@ with open('names.csv', 'w', newline='') as csvfile:
     writer.writerow(['id', 'EAP', 'HPL', 'MWS'])
     
 
-    for item in testSet:
-        prediction = nltk.NaiveBayesClassifier.prob_classify(theClass, item)
+    for theThing in thePredictions:
+        prediction = theThing
         tempList = []
         tempList.append(idNumber[printCount])
         for label in prediction.samples():
