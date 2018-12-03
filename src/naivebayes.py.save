@@ -56,7 +56,8 @@ allWords = [i[0] for i in sortedWords]
 
 #theWordsSet = set(allWords[500:3000])
 
-theWords  = list(allWords)[:15000]
+tempWords = list(allWords)
+
 
 #theWords = theWordSet[15000:16000]
 ########################################################################
@@ -69,16 +70,12 @@ with open('train.csv', encoding='utf8') as csvfile:
         label = theAuthors[row[2]]
         trainSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords), label))
 
-
-
-with open('test.csv', encoding='utf8') as theFile:
-    newReader = csv.reader(theFile)
-    for tRow in newReader:
-        testSet.append((GetFeatures(nltk.word_tokenize(tRow[1]), theWords)))
-        idNumber.append(tRow[0])
-
-
-
+with open('test.csv', encoding='utf8') as csvfile:
+    theReader = csv.reader(csvfile)
+    for row in theReader:
+        testSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords)))
+        idNumber.append(row[0])
+    
 splitNum = int(round(len(trainSet)*0.8))
 
 theClass = nltk.NaiveBayesClassifier.train(trainSet)
