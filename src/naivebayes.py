@@ -50,65 +50,44 @@ with open('train.csv', encoding='utf8') as csvfile:
 
 tempDist = FreqDist(allWords)
 
-sortedWords = sorted(tempDist.items(), key=operator.itemgetter(1), reverse=True)
+mostFreq = sorted(tempDist.items(), key=operator.itemgetter(1), reverse=True)
+leastFreq = sorted(tempDist.items(), key=operator.itemgetter(1), reverse=False)
 
-allWords = [i[0] for i in sortedWords]
+allMostFreq = [i[0] for i in mostFreq]
+allLeastFreq = [i[0] for i in leastFreq]
 
-#theWordsSet = set(allWords[500:3000])
+theSizes = [2000, 4000, 6000, 8000, 10000, 12000, 14000]
+orders = ["most", "least"]
 
-theWords  = list(allWords)[:15000]
+results = []
 
-#theWords = theWordSet[15000:16000]
-########################################################################
+for theSize in theSizes:
+	for theOrder in orders:
+	
+		theWords = []
+		
+		if (theOrder == "most"):
+			theWords  = list(allMostFreq)[:theSize]
+		else:
+			theWords = list(allLeastFreq)[:theSize]
 
+		with open('train.csv', encoding='utf8') as csvfile:
+			theReader = csv.reader(csvfile)
+			for row in theReader:
+				label = theAuthors[row[2]]
+				trainSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords), label))
 
-###########################################################################
-with open('train.csv', encoding='utf8') as csvfile:
-    theReader = csv.reader(csvfile)
-    for row in theReader:
-        label = theAuthors[row[2]]
-        trainSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords), label))
+		splitNum = int(round(len(trainSet)*0.8))
 
+		theClass = None
+		theClass = nltk.NaiveBayesClassifier.train(trainSet[:splitNum])
+		
+		theAccuracy = nltk.classify.accuracy(theClass, trainSet[splitNum:])
+		print([theSize, theOrder, theAccuracy])
+		results.append([theSize, theOrder, theAccuracy])
+		
 
-
-with open('test.csv', encoding='utf8') as theFile:
-    newReader = csv.reader(theFile)
-    for tRow in newReader:
-        testSet.append((GetFeatures(nltk.word_tokenize(tRow[1]), theWords)))
-        idNumber.append(tRow[0])
-
-
-
-splitNum = int(round(len(trainSet)*0.8))
-
-theClass = nltk.NaiveBayesClassifier.train(trainSet)
-
-theAccuracy = nltk.classify.accuracy(theClass, trainSet[splitNum:])
-theClass.show_most_informative_features(10)
-
-printCount = 0
-
-thePredictions = []
-
-for item in testSet:
-	thePredictions.append(nltk.NaiveBayesClassifier.prob_classify(theClass, item))
-
-with open('accuracy.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',')    
-    writer.writerow([theAccuracy])
-
-
-with open('names.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',')    
-    writer.writerow(['id', 'EAP', 'HPL', 'MWS'])
-    
-
-    for theThing in thePredictions:
-        prediction = theThing
-        tempList = []
-        tempList.append(idNumber[printCount])
-        for label in prediction.samples():
-            tempList.append(prediction.prob(label))
-        printCount += 1
-        writer.writerow(tempList)
-
+with open('results.csv', 'w', newline='') as csvfile:
+	writer = csv.writer(csvfile, delimiter=',')
+	for result in results:
+		writer.writerow(result)
