@@ -33,6 +33,7 @@ def GetFeatures(localWords, allWords):
         features['contains({})'.format(word)] = (word in localWords)
     return features
 
+print('new time')
 outputFile = 'NB.csv'
 
 startTime = time.time()
