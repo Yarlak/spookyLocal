@@ -4,7 +4,7 @@ Created on Sat Nov 03 16:03:06 2018
 
 @author: OH YEA
 """
-
+import sys
 import csv
 import nltk
 import itertools
