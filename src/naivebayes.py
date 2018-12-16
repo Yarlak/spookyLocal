@@ -33,7 +33,6 @@ def GetFeatures(localWords, allWords):
         features['contains({})'.format(word)] = (word in localWords)
     return features
 
-print('new time')
 outputFile = 'NB.csv'
 
 startTime = time.time()
@@ -57,13 +56,13 @@ leastFreq = sorted(tempDist.items(), key=operator.itemgetter(1), reverse=False)
 allMostFreq = [i[0] for i in mostFreq]
 allLeastFreq = [i[0] for i in leastFreq]
 
-theSizes = [2000, 4000, 6000, 8000, 10000, 12000, 14000]
-orders = ["most", "least"]
+theSize = int(sys.argv[1])
+theOrder = sys.argv[2]
 
 results = []
 
-for theSize in theSizes:
-	for theOrder in orders:
+for i in range(1):
+	for j in range(1):
 	
 		theWords = []
 		
@@ -88,7 +87,15 @@ for theSize in theSizes:
 		results.append([theSize, theOrder, theAccuracy])
 		
 
+tempThings = []
+with open('results.csv', encoding='utf8') as csvfile:
+	finalReader = csv.reader(csvfile)
+	for row in finalReader:
+		tempThings.append(row)
+
 with open('results.csv', 'w', newline='') as csvfile:
 	writer = csv.writer(csvfile, delimiter=',')
+	for tempThing in tempThings:
+		writer.writerow(tempThing)
 	for result in results:
 		writer.writerow(result)
