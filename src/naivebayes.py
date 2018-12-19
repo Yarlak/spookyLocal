@@ -56,8 +56,8 @@ leastFreq = sorted(tempDist.items(), key=operator.itemgetter(1), reverse=False)
 allMostFreq = [i[0] for i in mostFreq]
 allLeastFreq = [i[0] for i in leastFreq]
 
-theSize = int(sys.argv[1])
-theOrder = sys.argv[2]
+theSize = 10
+theOrder = "most"
 
 results = []
 
@@ -76,6 +76,12 @@ for i in range(1):
 			for row in theReader:
 				label = theAuthors[row[2]]
 				trainSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords), label))
+		
+		with open('test.csv', encoding='utf8') as csvfile:
+			testReader = csv.reader(csvfile)
+			for row in testReader:
+				testSet.append((GetFeatures(nltk.word_tokenize(row[1]), theWords)))
+				idNumber.append(row[0])
 
 		splitNum = int(round(len(trainSet)*0.8))
 
@@ -99,3 +105,24 @@ with open('results.csv', 'w', newline='') as csvfile:
 		writer.writerow(tempThing)
 	for result in results:
 		writer.writerow(result)
+		
+printCount = 0
+
+thePredictions = []
+
+for item in testSet:
+	thePredictions.append(nltk.NaiveBayesClassifier.prob_classify(theClass, item))
+
+with open('names.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')    
+    writer.writerow(['id', 'EAP', 'HPL', 'MWS'])
+    
+
+    for theThing in thePredictions:
+        prediction = theThing
+        tempList = []
+        tempList.append(idNumber[printCount])
+        for label in prediction.samples():
+            tempList.append(prediction.prob(label))
+        printCount += 1
+        writer.writerow(tempList)
